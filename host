@@ -1,0 +1,8 @@
+[postgres]
+192.168.0.29
+
+[all:vars]
+ansible_connection=ssh
+ansible_user=epitech
+ansible_ssh_pass=pass
+ansible_python_interpreter=/usr/bin/python3
