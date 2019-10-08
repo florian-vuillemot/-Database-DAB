@@ -1,0 +1,23 @@
+---
+- hosts: postgres
+  become: yes
+  become_user: postgres
+  gather_facts: no
+
+  vars:
+    dbname: myapp
+    dbuser: django    
+    dbpassword: mysupersecretpassword
+
+  tasks:
+  - name: ensure database is created
+    postgresql_db: name={{dbname}}
+
+  - name: ensure user has access to database
+    postgresql_user: db={{dbname}} name={{dbuser}} password={{dbpassword}} priv=ALL
+
+  - name: ensure user does not have unnecessary privilege
+    postgresql_user: name={{dbuser}} role_attr_flags=NOSUPERUSER,NOCREATEDB
+  
+  - name: ensure no other user can access the database
+    postgresql_privs: db={{dbname}} role=PUBLIC type=database priv=ALL state=absent
