@@ -5,6 +5,6 @@
 
 - name: Install PostgreSQL
   yum:
-    name: "postgresql11,postgresql11-server"
+    name: ["postgresql11", "postgresql11-server"]
     state: present
   notify: [ "Init PostgreSQL", "Start and enabled PostgreSQL" ]
