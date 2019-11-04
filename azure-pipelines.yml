@@ -17,6 +17,7 @@ steps:
 
 - script: |
     python -m pip install molecule
+    cd postgresql
     molecule test
   displayName: 'Install and run molecule'
 
