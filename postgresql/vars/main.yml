@@ -1,2 +1,7 @@
----
-# vars file for postgresql
+databases:
+  - postgres
+
+users:
+  - name: rails
+    password: password
+    db: postgres

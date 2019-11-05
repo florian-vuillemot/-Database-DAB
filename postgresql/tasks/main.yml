@@ -5,6 +5,50 @@
 
 - name: Install PostgreSQL
   yum:
-    name: ["postgresql11", "postgresql11-server"]
+    name: ["postgresql11", "postgresql11-server", "python-psycopg2"]
     state: present
-  notify: [ "Init PostgreSQL", "Start and enabled PostgreSQL" ]
+  notify: "Init PostgreSQL"
+
+- name: Force init PostgreSQL
+  meta: flush_handlers
+
+- name: Update pg_hba.conf
+  template:
+    src: "pg_hba.conf"
+    dest: "/var/lib/pgsql/11/data/pg_hba.conf"
+    owner: postgres
+    group: postgres
+
+- name: Start and enabled PostgreSQL
+  systemd:
+    name: postgresql-11
+    state: started
+    enabled: yes
+
+- name: ensure database is created
+  become: yes
+  become_user: postgres
+  postgresql_db:
+    name: "{{ item }}"
+  with_items:
+    - "{{ databases }}"
+
+- name: Create rails user
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    db: "{{ item['db'] }}"
+    name: "{{ item['name'] }}"
+    password: "{{ item['password'] }}"
+    role_attr_flags: NOSUPERUSER
+  with_items:
+    - "{{ users }}"
+
+- name: Upload test file for rails users
+  template:
+    src: "tests/postgres_users.j2"
+    dest: "/test_postgres_users"
+    owner: postgres
+    group: postgres
+    mode: a+x
+  when: debug|bool

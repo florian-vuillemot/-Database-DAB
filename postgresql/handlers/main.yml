@@ -1,8 +1,2 @@
 - name: Init PostgreSQL
   command: /usr/pgsql-11/bin/postgresql-11-setup initdb
-
-- name: Start and enabled PostgreSQL
-  systemd:
-    name: postgresql-11
-    state: started
-    enabled: yes
