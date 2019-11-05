@@ -38,5 +38,5 @@ def test_is_running(host, svc):
 
 def test_client_connection(host):
     cmd = host.run("su - postgres -c /test_postgres_users")
-    print(cmd.stdout)
+
     assert cmd.succeeded
