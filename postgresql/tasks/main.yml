@@ -29,21 +29,25 @@
   become: yes
   become_user: postgres
   postgresql_db:
-    name: postgres
+    name: "{{ item }}"
+  with_items:
+    - "{{ databases }}"
 
 - name: Create rails user
   become: yes
   become_user: postgres
   postgresql_user:
-    db: postgres
-    name: rails
-    password: password
+    db: "{{ item['db'] }}"
+    name: "{{ item['name'] }}"
+    password: "{{ item['password'] }}"
     role_attr_flags: NOSUPERUSER
+  with_items:
+    - "{{ users }}"
 
 - name: Upload test file for rails users
   template:
-    src: "tests/user_create.j2"
-    dest: "/"
+    src: "tests/postgres_users.j2"
+    dest: "/test_postgres_users"
     owner: postgres
     group: postgres
     mode: a+x
