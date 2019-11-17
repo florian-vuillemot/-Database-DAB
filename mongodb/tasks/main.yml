@@ -1,0 +1,22 @@
+---
+- name: Add MongoDB in package manager
+  become: yes
+  copy:
+    src: mongodb-org-4.2.repo
+    dest: /etc/yum.repos.d/mongodb-org-4.2.repo
+
+- name: Install MongoDB
+  yum:
+    name: "mongodb-org"
+    state: installed
+
+- name: Update MongoDB config file
+  become: yes
+  copy:
+    src: mongod.conf
+    dest: /etc/mongod.conf
+  notify: "Restart MongoDB"
+
+- name: Install PyMongo
+  pip:
+    name: pymongo
