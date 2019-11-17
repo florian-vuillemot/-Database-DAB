@@ -17,6 +17,12 @@
     dest: /etc/mongod.conf
   notify: "Restart MongoDB"
 
+- name: Add host for HA
+  mongo_ha:
+    hosts:
+      - mongodb0
+      - mongodb1
+
 - name: Install PyMongo
   pip:
     name: pymongo
