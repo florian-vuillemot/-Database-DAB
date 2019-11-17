@@ -1,5 +1,5 @@
 ---
-- name: Add mongodb in package manager
+- name: Add MongoDB in package manager
   become: yes
   copy:
     src: mongodb-org-4.2.repo
