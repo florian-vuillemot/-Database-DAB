@@ -6,10 +6,24 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: instance
+  - name: mongodb0
+    hostname: mongodb0
     image: fedora
     command: /sbin/init
     privileged: True
+    networks:
+      - name: mongodb
+    groups:
+      - mongodb
+  - name: mongodb1
+    hostname: mongodb1
+    image: fedora
+    command: /sbin/init
+    privileged: True
+    networks:
+      - name: mongodb
+    groups:
+      - mongodb
 provisioner:
   name: ansible
   lint:
