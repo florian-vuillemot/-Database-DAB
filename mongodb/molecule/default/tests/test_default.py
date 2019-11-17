@@ -1,4 +1,5 @@
 import os
+import pytest
 
 import testinfra.utils.ansible_runner
 
@@ -7,9 +8,19 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 ).get_hosts('all')
 
 
-def test_hosts_file(host):
-    f = host.file('/etc/hosts')
+@pytest.mark.parametrize('svc', [
+  'mongod'
+])
+def test_is_enabled(host, svc):
+    service = host.service(svc)
 
-    assert f.exists
-    assert f.user == 'root'
-    assert f.group == 'root'
+    assert service.is_enabled
+
+
+@pytest.mark.parametrize('svc', [
+    'mongod'
+])
+def test_is_running(host, svc):
+    service = host.service(svc)
+
+    assert service.is_running
