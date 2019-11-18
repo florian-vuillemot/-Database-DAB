@@ -68,20 +68,45 @@ from ansible.module_utils.basic import AnsibleModule
 from pymongo import MongoClient
 
 
-def get_members(mongo_client):
-    return mongo_client.admin.command('replSetGetConfig')['config']['members']
+def get_ha_members(mongo_client):
+    try:
+        members = mongo_client.admin.command('replSetGetConfig')['config']['members']
+    except:
+        members = []
+    return set(m['host'] for m in members)
+
+
+def not_in_ha(ha_members: set, hosts: list) -> set:
+    _hosts = set(f'{h}:27017' for h in hosts)
+    return ha_members ^ _hosts
+
+
+def new_ha_config(hosts, delayed_members):
+    members = []
+
+    for idx, host in enumerate(hosts):
+        m = {'_id': idx, 'host': f'{host}:27017'}
+
+        if host in delayed_members:
+            m.update({
+                'priority': 0,
+                'slaveDelay': delayed_members[host]['delay'],
+                'hidden': True,
+                'votes': 1
+            })
+        members.append(m)
+
+    return {
+        '_id': 'rs0',
+        'members': members
+    }
 
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
-        hosts=dict(type='list', required=True)
-    )
-
-    result = dict(
-        changed=False,
-        original_message='',
-        message=''
+        hosts=dict(type='list', required=True),
+        delayed_members=dict(type='list', required=False, default=[])
     )
 
     module = AnsibleModule(
@@ -89,30 +114,19 @@ def run_module():
         supports_check_mode=True
     )
 
-    if module.check_mode:
-        module.exit_json(**result)
-
     mongo_client = MongoClient('localhost', 27017)
 
     hosts = module.params.get('hosts')
+    delayed_members = module.params.get('delayed_members')
 
-    if not any(member['host'] not in hosts for member in get_members(mongo_client)):
+    ha_members = get_ha_members(mongo_client)
+    if ha_members and not not_in_ha(ha_members, hosts):
         module.exit_json(changed=False)
 
-    members = [{'_id': idx, 'host': f'{host}:27017'} for idx, host in enumerate(hosts)]
-    config = {'_id': 'rs0', 'members': members}
-    mongo_client.admin.command("replSetInitiate", config)
+    config = new_ha_config(hosts, delayed_members)
+    mongo_client.admin.command('replSetInitiate', config)
 
-    result['original_message'] = module.params['name']
-    result['message'] = 'New hosts added'
-
-    if module.params['new']:
-        result['changed'] = True
-
-    #if module.params['name'] == 'fail me':
-    #    module.fail_json(msg='You requested this to fail', **result)
-
-    module.exit_json(**result)
+    module.exit_json(changed=True)
 
 
 def main():
