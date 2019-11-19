@@ -24,14 +24,14 @@
 - name: Force MongoDB to restart
   meta: flush_handlers
 
-- name: Add host for HA
+- name: Add hosts for HA
   mongo_ha:
     hosts:
       - mongodb0
       - mongodb1
       - mongodb2
     delayed_members:
-      - mongodb2:
+      mongodb2:
         delay: 5
   run_once: yes
 

@@ -116,7 +116,7 @@ def wait_status(mongo_client, status, member_name=''):
 def run_module():
     module_args = dict(
         hosts=dict(type='list', required=True),
-        delayed_members=dict(type='list', required=False, default=[])
+        delayed_members=dict(type='dict', required=False, default={})
     )
 
     module = AnsibleModule(
@@ -138,7 +138,7 @@ def run_module():
         for member in new_members:
             nb_member = len(conf['config']['members'])
             conf['config']['members'].append({
-                '_id': nb_member + 1,
+                '_id': nb_member,
                 'host': member,
                 'priority': 0,
                 'votes': 0
@@ -146,9 +146,12 @@ def run_module():
             conf['config']['version'] += 1
             mongo_client.admin.command('replSetReconfig', conf['config'])
             wait_status(mongo_client, 'SECONDARY', member)
-            conf['config']['members'][-1]['priority'] = 1
-            conf['config']['members'][-1]['votes'] = 1
-            conf['config']['members'][-1]['hidden'] = False
+            conf = mongo_client.admin.command({'replSetGetConfig': 1})
+            for m in conf['config']['members']:
+                if member in m['host']:
+                    m['priority'] = 1
+                    m['votes'] = 1
+                    break
             conf['config']['version'] += 1
             mongo_client.admin.command('replSetReconfig', conf['config'])
     else:
