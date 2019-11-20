@@ -113,6 +113,29 @@ def wait_status(mongo_client, status, member_name=''):
         sleep(5)
 
 
+def add_new_members(mongo_client, new_members):
+    conf = mongo_client.admin.command({'replSetGetConfig': 1})
+    for member in new_members:
+        nb_member = len(conf['config']['members'])
+        conf['config']['members'].append({
+            '_id': nb_member,
+            'host': member,
+            'priority': 0,
+            'votes': 0
+        })
+        conf['config']['version'] += 1
+
+        mongo_client.admin.command('replSetReconfig', conf['config'])
+        wait_status(mongo_client, 'SECONDARY', member)
+
+        conf = mongo_client.admin.command({'replSetGetConfig': 1})
+        _member = next(m for m in conf['config']['members'] if member in m['host'])
+        _member['priority'] = 1
+        _member['votes'] = 1
+        conf['config']['version'] += 1
+        mongo_client.admin.command('replSetReconfig', conf['config'])
+
+
 def run_module():
     module_args = dict(
         hosts=dict(type='list', required=True),
@@ -134,26 +157,7 @@ def run_module():
         new_members = not_in_ha(ha_members, hosts)
         if not new_members:
             module.exit_json(changed=False)
-        conf = mongo_client.admin.command({'replSetGetConfig': 1})
-        for member in new_members:
-            nb_member = len(conf['config']['members'])
-            conf['config']['members'].append({
-                '_id': nb_member,
-                'host': member,
-                'priority': 0,
-                'votes': 0
-            })
-            conf['config']['version'] += 1
-            mongo_client.admin.command('replSetReconfig', conf['config'])
-            wait_status(mongo_client, 'SECONDARY', member)
-            conf = mongo_client.admin.command({'replSetGetConfig': 1})
-            for m in conf['config']['members']:
-                if member in m['host']:
-                    m['priority'] = 1
-                    m['votes'] = 1
-                    break
-            conf['config']['version'] += 1
-            mongo_client.admin.command('replSetReconfig', conf['config'])
+        add_new_members(mongo_client, new_members)
     else:
         config = new_ha_config(hosts, delayed_members)
         mongo_client.admin.command('replSetInitiate', config)

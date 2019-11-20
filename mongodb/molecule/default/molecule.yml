@@ -39,17 +39,6 @@ platforms:
           mongodb2
     groups:
       - mongodb
-  - name: mongodb3
-    hostname: mongodb3
-    image: fedora
-    command: /sbin/init
-    privileged: True
-    networks:
-      - name: mongodb
-        aliases:
-          mongodb3
-    groups:
-      - mongodb
 provisioner:
   name: ansible
   lint:

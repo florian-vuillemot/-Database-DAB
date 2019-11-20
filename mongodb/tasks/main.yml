@@ -34,9 +34,3 @@
       mongodb2:
         delay: 5
   run_once: yes
-
-- name: Add new server in HA
-  mongo_ha:
-    hosts:
-      - mongodb3
-  run_once: yes
