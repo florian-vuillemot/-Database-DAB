@@ -5,6 +5,10 @@
     src: mongodb-org-4.2.repo
     dest: /etc/yum.repos.d/mongodb-org-4.2.repo
 
+- name: Install PyMongo
+  pip:
+    name: pymongo
+
 - name: Install MongoDB
   yum:
     name: "mongodb-org"
@@ -17,12 +21,16 @@
     dest: /etc/mongod.conf
   notify: "Restart MongoDB"
 
-- name: Add host for HA
+- name: Force MongoDB to restart
+  meta: flush_handlers
+
+- name: Add hosts for HA
   mongo_ha:
     hosts:
       - mongodb0
       - mongodb1
-
-- name: Install PyMongo
-  pip:
-    name: pymongo
+      - mongodb2
+    delayed_members:
+      mongodb2:
+        delay: 5
+  run_once: yes
