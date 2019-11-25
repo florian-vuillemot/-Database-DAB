@@ -7,20 +7,10 @@
   yum:
     name: ["postgresql12-server", "python-psycopg2"]
     state: present
-  notify:
-  - "Init PostgreSQL"
+  notify: "Init PostgreSQL"
 
-- name: Force init PostgreSQL
+- name: Force init PostgreSQL master
   meta: flush_handlers
-
-- name: Create replication users
-  become: yes
-  become_user: postgres
-  postgresql_user:
-    name: "replication"
-    password: "Epitech42*" # TODO: change password conf
-    role_attr_flags: "REPLICATION,LOGIN"
-  when: inventory_hostname in groups['master']
 
 - name: Update pg_hba.conf
   template:
@@ -39,10 +29,20 @@
   notify: "Restart PostgreSQL"
   when: inventory_hostname in groups['master']
 
-- name: Restart PostgreSQL master
+- name: Force restart PostgreSQL master
   meta: flush_handlers
 
+- name: Create replication users
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    name: "replication"
+    password: "Epitech42*" # TODO: change password conf
+    role_attr_flags: "REPLICATION,LOGIN"
+  when: inventory_hostname in groups['master']
+
 - name: Launch replication
+  no_log: yes
   become: yes
   become_user: postgres
   start_postgresql_slave:
@@ -52,12 +52,4 @@
   notify:
     - "Start PostgreSQL"
     - "Enabled PostgreSQL"
-  when: inventory_hostname in groups['slave']
-  no_log: yes
-
-- name: Update PostgreSQL conf
-  lineinfile:
-    path: /var/lib/pgsql/12/data/postgresql.conf
-    line: promote_trigger_file='/tmp/postgresql.trigger.5432'
-    create: yes
   when: inventory_hostname in groups['slave']
