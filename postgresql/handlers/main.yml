@@ -1,2 +1,26 @@
 - name: Init PostgreSQL
-  command: /usr/pgsql-11/bin/postgresql-11-setup initdb
+  command: /usr/pgsql-12/bin/postgresql-12-setup initdb
+  when: inventory_hostname in groups['master']
+  notify:
+  - "Start PostgreSQL"
+  - "Enabled PostgreSQL"
+
+- name: Start PostgreSQL
+  systemd:
+    name: postgresql-12
+    state: started
+
+- name: Stop PostgreSQL
+  systemd:
+    name: postgresql-12
+    state: stopped
+
+- name: Enabled PostgreSQL
+  systemd:
+    name: postgresql-12
+    enabled: yes
+
+- name: Restart PostgreSQL
+  systemd:
+    name: postgresql-12
+    state: restarted

@@ -25,3 +25,8 @@ steps:
     cd mongodb
     molecule test
   displayName: 'Test MongoDB pattern'
+
+- script: |
+    cd postgresql
+    molecule test
+  displayName: 'Test PostgreSQL pattern'
