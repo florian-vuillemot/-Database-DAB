@@ -10,7 +10,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 @pytest.mark.parametrize('pkg', [
-  'postgresql11-server'
+  'postgresql12-server'
 ])
 def test_is_installed(host, pkg):
     package = host.package(pkg)
@@ -19,7 +19,7 @@ def test_is_installed(host, pkg):
 
 
 @pytest.mark.parametrize('svc', [
-  'postgresql-11'
+  'postgresql-12'
 ])
 def test_is_enabled(host, svc):
     service = host.service(svc)
@@ -28,15 +28,9 @@ def test_is_enabled(host, svc):
 
 
 @pytest.mark.parametrize('svc', [
-    'postgresql-11'
+    'postgresql-12'
 ])
 def test_is_running(host, svc):
     service = host.service(svc)
 
     assert service.is_running
-
-
-def test_client_connection(host):
-    cmd = host.run("su - postgres -c /test_postgres_users")
-
-    assert cmd.succeeded

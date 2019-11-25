@@ -6,10 +6,28 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: instance
+  - name: postgresql_master
+    hostname: postgresql_master
     image: centos:7
     command: /sbin/init
     privileged: True
+    networks:
+      - name: postgres
+        aliases:
+          postgresql_master
+    groups:
+      - master
+  - name: postgresql_slave
+    hostname: postgresql_slave
+    image: centos:7
+    command: /sbin/init
+    privileged: True
+    networks:
+      - name: postgres
+        aliases:
+          postgresql_slave
+    groups:
+      - slave
 provisioner:
   name: ansible
   lint:

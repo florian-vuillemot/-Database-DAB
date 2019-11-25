@@ -1,54 +1,63 @@
 - name: Allow PostgreSQL RPM repository
   yum:
-    name: "https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+    name: "https://yum.postgresql.org/12/redhat/rhel-7.4-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
     state: present
 
 - name: Install PostgreSQL
   yum:
-    name: ["postgresql11", "postgresql11-server", "python-psycopg2"]
+    name: ["postgresql12-server", "python-psycopg2"]
     state: present
-  notify: "Init PostgreSQL"
+  notify:
+  - "Init PostgreSQL"
 
 - name: Force init PostgreSQL
   meta: flush_handlers
 
-- name: Update pg_hba.conf
-  template:
-    src: "pg_hba.conf"
-    dest: "/var/lib/pgsql/11/data/pg_hba.conf"
-    owner: postgres
-    group: postgres
-
-- name: Start and enabled PostgreSQL
-  systemd:
-    name: postgresql-11
-    state: started
-    enabled: yes
-
-- name: ensure database is created
-  become: yes
-  become_user: postgres
-  postgresql_db:
-    name: "{{ item }}"
-  with_items:
-    - "{{ databases }}"
-
-- name: Create rails user
+- name: Create replication users
   become: yes
   become_user: postgres
   postgresql_user:
-    db: "{{ item['db'] }}"
-    name: "{{ item['name'] }}"
-    password: "{{ item['password'] }}"
-    role_attr_flags: NOSUPERUSER
-  with_items:
-    - "{{ users }}"
+    name: "replication"
+    password: "Epitech42*" # TODO: change password conf
+    role_attr_flags: "REPLICATION,LOGIN"
+  when: inventory_hostname in groups['master']
 
-- name: Upload test file for rails users
+- name: Update pg_hba.conf
   template:
-    src: "tests/postgres_users.j2"
-    dest: "/test_postgres_users"
+    src: "pg_hba.conf"
+    dest: "/var/lib/pgsql/12/data/pg_hba.conf"
     owner: postgres
     group: postgres
-    mode: a+x
-  when: debug|bool
+  notify: "Restart PostgreSQL"
+  when: inventory_hostname in groups['master']
+
+- name: Update PostgreSQL conf
+  lineinfile:
+    path: /var/lib/pgsql/12/data/postgresql.conf
+    line: listen_addresses='*'
+    create: yes
+  notify: "Restart PostgreSQL"
+  when: inventory_hostname in groups['master']
+
+- name: Restart PostgreSQL master
+  meta: flush_handlers
+
+- name: Launch replication
+  become: yes
+  become_user: postgres
+  start_postgresql_slave:
+    primary_hostname: postgresql_master
+    replication_username: replication
+    password: Epitech42*
+  notify:
+    - "Start PostgreSQL"
+    - "Enabled PostgreSQL"
+  when: inventory_hostname in groups['slave']
+  no_log: yes
+
+- name: Update PostgreSQL conf
+  lineinfile:
+    path: /var/lib/pgsql/12/data/postgresql.conf
+    line: promote_trigger_file='/tmp/postgresql.trigger.5432'
+    create: yes
+  when: inventory_hostname in groups['slave']
