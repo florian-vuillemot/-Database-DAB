@@ -2,67 +2,58 @@
 
 
 ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
+    'metadata_version': '1.0',
     'status': ['preview'],
     'supported_by': 'community'
 }
 
 DOCUMENTATION = '''
 ---
-module: my_test
+module: mongo_ha
 
-short_description: This is my test module
+short_description: Configure MongoDB in High Availability
 
-version_added: "2.4"
+version_added: "1.0"
 
 description:
-    - "This is my longer description explaining my test module"
+    - "Configure MongoDB in HA and allow to add a standby machine with a delay"
 
 options:
-    name:
+    hosts:
         description:
-            - This is the message to send to the test module
+            - List of host to add in HA
         required: true
-    new:
+    delayed_members:
         description:
-            - Control to demo if the result of this module is changed or not
-        required: false
-
-extends_documentation_fragment:
-    - azure
+            - Hash of hosts with the delay
+        required: true
 
 author:
-    - Your Name (@yourhandle)
+    - Florian Vuillemot
 '''
 
 EXAMPLES = '''
-# Pass in a message
-- name: Test with a message
-  my_test:
-    name: hello world
+- name: Configure mongodb0 and mongodb1 in HA
+  mongo_ha:
+    hosts:
+      - mongodb0
+      - mongodb1
+  run_once: yes
 
-# pass in a message and have changed true
-- name: Test with a message and changed output
-  my_test:
-    name: hello world
-    new: true
-
-# fail the module
-- name: Test failure of the module
-  my_test:
-    name: fail me
+- name: Configure mongodb0 and mongodb1 in HA and add mongodb2 in standy server with a delay of 5 seconds
+  mongo_ha:
+    hosts:
+      - mongodb0
+      - mongodb1
+      - mongodb2
+    delayed_members:
+      mongodb2:
+        delay: 5
+  run_once: yes
 '''
 
-RETURN = '''
-original_message:
-    description: The original name param that was passed in
-    type: str
-    returned: always
-message:
-    description: The output message that the test module generates
-    type: str
-    returned: always
-'''
+RETURN = ''''''
+
 
 from time import sleep
 from ansible.module_utils.basic import AnsibleModule
