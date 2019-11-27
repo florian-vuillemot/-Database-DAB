@@ -37,7 +37,7 @@ def test_is_running(host, svc):
     assert service.is_running
 
 
-def test_then_databases_are_created(host):
+def test_then_databases_are_created_and_verify_ha(host):
     db_default = ['postgres', 'template0', 'template1']
     _host = host.interface("eth0").addresses[0]
     c_str = "dbname='test_db' user='foo' host='" + _host + "' password='bar'"
