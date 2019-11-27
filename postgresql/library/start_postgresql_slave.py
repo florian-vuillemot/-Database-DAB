@@ -2,67 +2,57 @@
 
 
 ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
+    'metadata_version': '1.0',
     'status': ['preview'],
     'supported_by': 'community'
 }
 
 DOCUMENTATION = '''
 ---
-module: my_test
+module: start_postgresql_slave
 
-short_description: This is my test module
+short_description: Configure a PostgreSQL instance in slave
 
-version_added: "2.4"
+version_added: "1.0"
 
 description:
-    - "This is my longer description explaining my test module"
+    - "Configure a PostgreSQL instance in slave of a master"
 
 options:
-    name:
+    primary_hostname:
         description:
-            - This is the message to send to the test module
+            - PostgreSQL master
         required: true
-    new:
+    replication_username:
         description:
-            - Control to demo if the result of this module is changed or not
-        required: false
-
-extends_documentation_fragment:
-    - azure
+            - Username use with REPLICATE access
+        required: true
+    password:
+        description:
+            - Username password's
+        required: true
 
 author:
-    - Your Name (@yourhandle)
+    - Florian Vuillemot
 '''
 
 EXAMPLES = '''
-# Pass in a message
-- name: Test with a message
-  my_test:
-    name: hello world
-
-# pass in a message and have changed true
-- name: Test with a message and changed output
-  my_test:
-    name: hello world
-    new: true
-
-# fail the module
-- name: Test failure of the module
-  my_test:
-    name: fail me
+- name: Add to postgresql_master machines from groups slave by using 'replication' user
+  no_log: yes
+  become: yes
+  become_user: postgres
+  start_postgresql_slave:
+    primary_hostname: postgresql_master
+    replication_username: replication
+    password: {{ password }}
+  notify:
+    - "Start PostgreSQL"
+    - "Enabled PostgreSQL"
+  when: inventory_hostname in groups['slave']
 '''
 
-RETURN = '''
-original_message:
-    description: The original name param that was passed in
-    type: str
-    returned: always
-message:
-    description: The output message that the test module generates
-    type: str
-    returned: always
-'''
+RETURN = ''''''
+
 
 import os
 from ansible.module_utils.basic import AnsibleModule

@@ -1,0 +1,6 @@
+replication_username: replication
+replication_username_password: Epitech42
+
+users:
+  - {db: 'test_db', name: 'foo', password: 'bar'}
+  - {db: 'test_db2', name: 'foo2', password: 'bar2'}

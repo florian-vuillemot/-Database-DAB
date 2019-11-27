@@ -36,8 +36,8 @@
   become: yes
   become_user: postgres
   postgresql_user:
-    name: "replication"
-    password: "Epitech42*" # TODO: change password conf
+    name: "{{ replication_username }}"
+    password: "{{ replication_username_password }}"
     role_attr_flags: "REPLICATION,LOGIN"
   when: inventory_hostname in groups['master']
 
@@ -47,9 +47,43 @@
   become_user: postgres
   start_postgresql_slave:
     primary_hostname: postgresql_master
-    replication_username: replication
-    password: Epitech42*
+    replication_username: "{{ replication_username }}"
+    password: "{{ replication_username_password }}"
   notify:
     - "Start PostgreSQL"
     - "Enabled PostgreSQL"
   when: inventory_hostname in groups['slave']
+
+- name: Standby machine
+  no_log: yes
+  become: yes
+  become_user: postgres
+  start_postgresql_slave:
+    primary_hostname: postgresql_slave
+    replication_username: "{{ replication_username }}"
+    password: "{{ replication_username_password }}"
+  notify:
+    - "Start PostgreSQL"
+    - "Enabled PostgreSQL"
+  when: inventory_hostname == "postgresql_backup"
+
+- name: Force restart PostgreSQL master
+  meta: flush_handlers
+
+- name: Create database
+  become: yes
+  become_user: postgres
+  postgresql_db:
+    name: "{{ item.db }}"
+  with_items: "{{ users }}"
+  when: inventory_hostname in groups['master']
+
+- name: Ex user
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    db: "{{ item.db }}"
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+  with_items: "{{ users }}"
+  when: inventory_hostname in groups['master']

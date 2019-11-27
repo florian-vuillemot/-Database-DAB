@@ -28,6 +28,17 @@ platforms:
           postgresql_slave
     groups:
       - slave
+  - name: postgresql_backup
+    hostname: postgresql_backup
+    image: centos:7
+    command: /sbin/init
+    privileged: True
+    networks:
+      - name: postgres
+        aliases:
+          postgresql_backup
+    groups:
+      - slave
 provisioner:
   name: ansible
   lint:
