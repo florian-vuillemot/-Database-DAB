@@ -5,11 +5,23 @@
     src: mongodb-org-4.2.repo
     dest: /etc/yum.repos.d/mongodb-org-4.2.repo
 
+- name: Install EPEL
+  become: yes
+  yum:
+    name: "epel-release"
+
+- name: Install Python and Pip
+  become: yes
+  yum:
+    name: ["python3", "python3-pip"]
+
 - name: Install PyMongo
+  become: yes
   pip:
     name: pymongo
 
 - name: Install MongoDB
+  become: yes
   yum:
     name: "mongodb-org"
     state: installed
@@ -27,10 +39,10 @@
 - name: Add hosts for HA
   mongo_ha:
     hosts:
-      - mongodb0
-      - mongodb1
-      - mongodb2
+      - "{{ groups['mongodb0'][0] }}"
+      - "{{ groups['mongodb1'][0] }}"
+      - "{{ groups['mongodb2'][0] }}"
     delayed_members:
-      mongodb2:
+      "{{ groups['mongodb2'][0] }}":
         delay: 5
   run_once: yes

@@ -1,0 +1,7 @@
+FROM fedora
+
+EXPOSE 27017
+
+COPY configure ./script
+
+CMD ["./script"]

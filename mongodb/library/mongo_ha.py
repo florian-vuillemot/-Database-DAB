@@ -68,7 +68,7 @@ def get_ha_members(mongo_client):
     return set(m['host'].replace(':27017', '') for m in members)
 
 
-def not_in_ha(ha_hosts_members: set, hosts: list) -> set:
+def not_in_ha(ha_hosts_members, hosts):
     _hosts = set(hosts)
     disjoint_hosts = ha_hosts_members ^ _hosts
     hosts_not_in_ha = disjoint_hosts & _hosts
@@ -79,7 +79,7 @@ def new_ha_config(hosts, delayed_members):
     members = []
 
     for idx, host in enumerate(hosts):
-        m = {'_id': idx, 'host': f'{host}:27017'}
+        m = {'_id': idx, 'host': host + ':27017'}
 
         if host in delayed_members:
             m.update({

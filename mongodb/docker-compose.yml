@@ -1,0 +1,57 @@
+
+version: '3.1'
+
+services:
+    mongodb_master:
+     build:
+       context: .
+       dockerfile: Dockerfile-master
+     image: mongodb
+     ports:
+       - "27017:27017"
+     volumes:
+       - db_data:/tmp/db_data
+     restart: always
+     networks:
+       mongodb:
+         aliases:
+           - master
+    mongodb_slave1:
+     depends_on:
+      - mongodb_master
+     build:
+       context: .
+       dockerfile: Dockerfile-master
+     image: mongodb
+     ports:
+       - "27018:27017"
+     volumes:
+       - db_data:/tmp/db_data
+     restart: always
+     networks:
+       mongodb:
+         aliases:
+           - slave1
+    mongodb_slave2:
+     depends_on:
+      - mongodb_slave1
+     build:
+       context: .
+       dockerfile: Dockerfile-master
+     image: mongodb
+     ports:
+       - "27019:27017"
+     volumes:
+       - db_data:/tmp/db_data
+     restart: always
+     networks:
+       mongodb:
+         aliases:
+           - slave2
+
+volumes:
+  db_data: {}
+
+networks:
+  mongodb:
+    driver: bridge

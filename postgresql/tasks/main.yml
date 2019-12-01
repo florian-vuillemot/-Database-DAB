@@ -1,9 +1,11 @@
 - name: Allow PostgreSQL RPM repository
+  become: yes
   yum:
     name: "https://yum.postgresql.org/12/redhat/rhel-7.4-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
     state: present
 
 - name: Install PostgreSQL
+  become: yes
   yum:
     name: ["postgresql12-server", "python-psycopg2"]
     state: present
@@ -13,6 +15,7 @@
   meta: flush_handlers
 
 - name: Update pg_hba.conf
+  become: yes
   template:
     src: "pg_hba.conf"
     dest: "/var/lib/pgsql/12/data/pg_hba.conf"
@@ -22,6 +25,7 @@
   when: inventory_hostname in groups['master']
 
 - name: Update PostgreSQL conf
+  become: yes
   lineinfile:
     path: /var/lib/pgsql/12/data/postgresql.conf
     line: listen_addresses='*'
@@ -46,26 +50,28 @@
   become: yes
   become_user: postgres
   start_postgresql_slave:
-    primary_hostname: postgresql_master
+    primary_hostname: "{{ groups['postgresql_master'][0] }}"
     replication_username: "{{ replication_username }}"
     password: "{{ replication_username_password }}"
   notify:
     - "Start PostgreSQL"
     - "Enabled PostgreSQL"
-  when: inventory_hostname in groups['slave']
+  when: >
+    inventory_hostname in groups['slave'] and
+    inventory_hostname not in groups['backup']
 
 - name: Standby machine
   no_log: yes
   become: yes
   become_user: postgres
   start_postgresql_slave:
-    primary_hostname: postgresql_slave
+    primary_hostname: "{{ groups['postgresql_slave'][0] }}"
     replication_username: "{{ replication_username }}"
     password: "{{ replication_username_password }}"
   notify:
     - "Start PostgreSQL"
     - "Enabled PostgreSQL"
-  when: inventory_hostname == "postgresql_backup"
+  when: inventory_hostname in groups['backup']
 
 - name: Force restart PostgreSQL master
   meta: flush_handlers

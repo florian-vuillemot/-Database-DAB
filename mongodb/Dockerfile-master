@@ -1,0 +1,13 @@
+FROM fedora
+
+EXPOSE 27017
+
+COPY files/mongodb-org-4.2.repo /etc/yum.repos.d/mongodb-org-4.2.repo
+
+RUN yum install -y mongodb-org
+
+COPY files/mongod.master.conf /etc/mongod.conf
+
+RUN mkdir -p /data/db
+
+CMD "mongod"
