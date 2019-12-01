@@ -17,6 +17,7 @@ steps:
 
 - script: |
     python -m pip install pymongo
+    python -m pip install psycopg2
     python -m pip install molecule
     python -m pip install molecule[docker]
   displayName: 'Install molecule'
