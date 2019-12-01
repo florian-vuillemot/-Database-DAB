@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "vnetName": {
-            "value": "dab"
+            "value": "vnet"
         },
         "subnet1Name": {
             "value": "Subnet0"

@@ -43,6 +43,9 @@
         "metadata": {
           "description": "Public IP of the machine"
         }
+      },
+      "resourceTags": {
+        "type": "object"
       }
     },
     "variables": {
@@ -54,6 +57,7 @@
         "apiVersion": "2018-11-01",
         "name": "[parameters('publicIPAddressName')]",
         "location": "[variables('location')]",
+        "tags": "[parameters('resourceTags')]",
         "properties": {
             "publicIPAllocationMethod": "Dynamic"
         },
@@ -66,12 +70,13 @@
         "apiVersion": "2018-11-01",
         "name": "[parameters('networkInterfaceName')]",
         "location": "[variables('location')]",
+        "tags": "[parameters('resourceTags')]",
         "dependsOn": [
             "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressName'))]"
         ],
         "properties": {
             "ipConfigurations": [
-            {
+              {
                 "name": "ipconfig1",
                     "properties": {
                     "privateIPAllocationMethod": "Dynamic",
@@ -82,7 +87,7 @@
                         "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vNetName'), parameters('vNetSubnetName'))]"
                     }
                 }
-            }
+              }
             ]
         }
       },
@@ -91,6 +96,7 @@
         "apiVersion": "2018-10-01",
         "name": "[parameters('vmName')]",
         "location": "[variables('location')]",
+        "tags": "[parameters('resourceTags')]",
         "dependsOn": [
             "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]"
         ],
@@ -115,9 +121,9 @@
           },
           "storageProfile": {
             "imageReference": {
-              "publisher": "Canonical",
-              "offer": "UbuntuServer",
-              "sku": "18.04-LTS",
+              "publisher": "OpenLogic",
+              "offer": "CentOS",
+              "sku": "7.5",
               "version": "latest"
             },
             "osDisk": {
@@ -133,11 +139,5 @@
           }
         }
       }
-    ],
-    "outputs": {
-      "adminUsername": {
-        "type": "string",
-        "value": "[parameters('adminUsername')]"
-      }
-    }
+    ]
   }

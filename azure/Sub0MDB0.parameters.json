@@ -3,10 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "vmName": {
-            "value": "Sub0pSQL1"
+            "value": "Sub0pSQL0"
         },
         "networkInterfaceName": {
-            "value": "netIntSub0pSQL1"
+            "value": "netIntSub0pSQL0"
         },
         "adminUsername": {
             "value": "epitech"
@@ -21,13 +21,13 @@
             "value": "Subnet0"
         },
         "publicIPAddressName": {
-            "value": "Sub0pSQL1-ip"
+            "value": "Sub0pSQL0-ip"
         },
         "resourceTags": {
             "value": {
                 "Environment": "Prod",
-                "Base": "PostgreSQL",
-                "Name": "slave"
+                "Base": "MongoDB",
+                "Name": "master"
             }
         }
     }

@@ -3,10 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "vmName": {
-            "value": "Sub0pSQL1"
+            "value": "Sub1SQL0"
         },
         "networkInterfaceName": {
-            "value": "netIntSub0pSQL1"
+            "value": "netIntSub1SQL0"
         },
         "adminUsername": {
             "value": "epitech"
@@ -18,10 +18,10 @@
             "value": "vnet"
         },
         "vNetSubnetName": {
-            "value": "Subnet0"
+            "value": "Subnet1"
         },
         "publicIPAddressName": {
-            "value": "Sub0pSQL1-ip"
+            "value": "Sub1SQL0-ip"
         },
         "resourceTags": {
             "value": {

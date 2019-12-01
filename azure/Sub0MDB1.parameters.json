@@ -3,10 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "vmName": {
-            "value": "Sub1SQL1"
+            "value": "Sub0MDB1"
         },
         "networkInterfaceName": {
-            "value": "netIntVM3"
+            "value": "netIntSub0MDB1"
         },
         "adminUsername": {
             "value": "epitech"
@@ -15,13 +15,20 @@
             "value": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCg1v3e4TyddghxTei9mDlRI7StljHuWRDexfwKC2WzVfmZdeQwLlgVrKsNWQFs13MkbvffWesOdV2jq93std9DPiuLSgG8OoUwBYHFCVU/5jqnRNKpVwh+ABPRgydObRJeRm/LVdACTg50Y+nrIMAG1HNVqWl6Ev2R0NZku6ysHJbDnRG7WUS06uD/Us9oZtCB6hKTmyXk+0J4wwOrcGVKoDbfMvNgkfPjhzy927QScdNICrvFS+vg9V7IoI8v10HZ+p7GrJ1TKvD7EJdCHKGD+Ns/sj254SpQ6VJwEkNCrroUkS4RA7Ls29WPZvs2ls1qA7oGVmeG64IR5dRMWgFN vuille_f@vuille"
         },
         "vNetName": {
-            "value": "dab"
+            "value": "vnet"
         },
         "vNetSubnetName": {
-            "value": "Subnet1"
+            "value": "Subnet0"
         },
         "publicIPAddressName": {
-            "value": "subnet1ip1"
+            "value": "Sub0MDB1-ip"
+        },
+        "resourceTags": {
+            "value": {
+                "Environment": "Prod",
+                "Base": "MongoDB",
+                "Name": "slave"
+            }
         }
     }
 }
