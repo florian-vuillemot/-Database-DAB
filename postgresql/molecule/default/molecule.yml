@@ -38,7 +38,7 @@ platforms:
         aliases:
           postgresql_backup
     groups:
-      - slave
+      - backup
 provisioner:
   name: ansible
   lint:
