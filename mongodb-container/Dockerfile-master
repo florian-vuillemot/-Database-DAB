@@ -6,7 +6,8 @@ COPY files/mongodb-org-4.2.repo /etc/yum.repos.d/mongodb-org-4.2.repo
 
 RUN yum install -y mongodb-org
 
-COPY configure configure
-COPY configure2 configure2
+RUN mkdir -p /data/db
 
-CMD ["bash", "./configure2"]
+COPY files/mongod.conf /etc/mongod.conf
+
+ENTRYPOINT ["/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0"]

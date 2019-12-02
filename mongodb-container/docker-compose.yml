@@ -47,7 +47,7 @@ services:
       - mongodb_slave2
      build:
        context: .
-       dockerfile: Dockerfile-slave
+       dockerfile: Dockerfile-replica
      image: replicat_init
      restart: "no"
      networks:
