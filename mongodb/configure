@@ -1,8 +1,8 @@
-mongo --host master < """rs.initiate( {
+rs.initiate( {
    _id : "rs0",
    members: [
       { _id: 0, host: "master:27017" },
       { _id: 1, host: "slave1:27017" },
       { _id: 2, host: "slave2:27017" }
    ]
-})"""
+})

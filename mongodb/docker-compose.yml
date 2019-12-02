@@ -9,8 +9,6 @@ services:
      image: mongodb
      ports:
        - "27017:27017"
-     volumes:
-       - db_data:/tmp/db_data
      restart: always
      networks:
        mongodb:
@@ -25,8 +23,6 @@ services:
      image: mongodb
      ports:
        - "27018:27017"
-     volumes:
-       - db_data:/tmp/db_data
      restart: always
      networks:
        mongodb:
@@ -41,13 +37,23 @@ services:
      image: mongodb
      ports:
        - "27019:27017"
-     volumes:
-       - db_data:/tmp/db_data
      restart: always
      networks:
        mongodb:
          aliases:
            - slave2
+    replicat_init:
+     depends_on:
+      - mongodb_slave2
+     build:
+       context: .
+       dockerfile: Dockerfile-slave
+     image: replicat_init
+     restart: "no"
+     networks:
+       mongodb:
+         aliases:
+           - replicat_init
 
 volumes:
   db_data: {}
