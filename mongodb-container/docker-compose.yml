@@ -7,6 +7,8 @@ services:
        context: .
        dockerfile: Dockerfile-master
      image: mongodb
+     volumes:
+       - db_data_master:/var/lib/mongo
      ports:
        - "27017:27017"
      restart: always
@@ -21,6 +23,8 @@ services:
        context: .
        dockerfile: Dockerfile-master
      image: mongodb
+     volumes:
+       - db_data_slave1:/var/lib/mongo
      ports:
        - "27018:27017"
      restart: always
@@ -35,6 +39,8 @@ services:
        context: .
        dockerfile: Dockerfile-master
      image: mongodb
+     volumes:
+       - db_data_slave2:/var/lib/mongo
      ports:
        - "27019:27017"
      restart: always
@@ -56,7 +62,9 @@ services:
            - replicat_init
 
 volumes:
-  db_data: {}
+  db_data_master: {}
+  db_data_slave1: {}
+  db_data_slave2: {}
 
 networks:
   mongodb:
