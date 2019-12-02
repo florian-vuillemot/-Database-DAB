@@ -92,5 +92,5 @@ foreach ($vm in $vms) {
 }    
 
 $ips = GetIpsAddress -ResourceGroupName $resourceGroupName
-Write-Host "IP of masters: $ips.masters"
-Write-Host "IP of Slaves: $ips.slaves"
+Write-Host "IP of masters: $($ips.masters)"
+Write-Host "IP of Slaves: $($ips.slaves)"
