@@ -1,20 +1,22 @@
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+This school project it's about database replication. Beside theorical review we have to configure a database replication with MongoDB and PostgreSQL in Master-Slave and a third machine in backup.
+
+There are **no** security consideration here.
+
+This courses it's the following of the "Infinity-Storage" project.
 
 # Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+All this project can be deploy on Azure. If you want create this environment you can go in the directory Azure.
+
+If you want to install a MongoDB or PostgreSQL database, go in the directory, filled the `inventory.cfg` and run `ansible-playbook -i inventory.cfg molecule/default/playbook.yml`. Don't forget to update you `~/.ansible.cfg` files by adding this directory in your roles.
 
 # Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+You need Python, Pipenv and docker to run this following part.
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+All the dependancies are in the Pipenv file.
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+Please, after installed Pipenv run `pipenv shell; pipenv install` to obtain a configuration up.
+
+Go in the direcoties mongodb/postgresql and run `molecule test` to run tests.
+
+You can also find the `azure-pipelines.yml` file that will allow you to run a test pipeline in Azure Devops.
